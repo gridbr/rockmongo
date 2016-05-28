@@ -22,7 +22,7 @@ class AdminController extends BaseController {
 
 		$isMasterRet =  null;
 		try {
-			$isMasterRet = $this->_mongo->selectDB($this->_admin->defaultDb())->command(array( "isMaster" => 1 ));
+			$isMasterRet = $this->_mongo->selectDatabase($this->_admin->defaultDb())->command(array( "isMaster" => 1 ))->toArray()[0];
 			if ($isMasterRet["ok"]) {
 				$this->isMaster = $isMasterRet["ismaster"];
 			}

@@ -5,11 +5,11 @@ import("classes.BaseController");
 class ServerController extends BaseController {
 	/** server infomation **/
 	public function doIndex() {
-		$db = $this->_mongo->selectDB("admin");
+		$db = $this->_mongo->selectDatabase("admin");
 
 		//command line
 		try {
-			$query = $db->command(array("getCmdLineOpts" => 1));
+			$query = $db->command(array("getCmdLineOpts" => 1))->toArray()[0];
 			if (isset($query["argv"])) {
 				$this->commandLine = implode(" ", $query["argv"]);
 			}

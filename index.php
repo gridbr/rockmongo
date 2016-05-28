@@ -21,7 +21,7 @@ if (!version_compare(PHP_VERSION, "5.0")) {
 }
 require('vendor/autoload.php');
 if (!class_exists("MongoDB\Client")) {
-	exit("To make things right, you must install mongodb module. <a href=\"http://php.net/manual/en/mongodb.setup.php" target=\"_blank\">Here for installation documents on PHP.net.</a>");
+	exit("To make things right, you must install mongodb module. <a href=\"http://php.net/manual/en/mongodb.setup.php\" target=\"_blank\">Here for installation documents on PHP.net.</a>");
 }
 
 // enforce Mongo support for int64 data type (Kyryl Bilokurov <kyryl.bilokurov@gmail.com>)

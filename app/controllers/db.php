@@ -16,7 +16,7 @@ class DbController extends BaseController {
 		}
 
 		//collections
-		$db = $this->_mongo->selectDB($this->db);
+		$db = $this->_mongo->selectDatabase($this->db);
 		$collections = MDb::listCollections($db);
 
 		$ret = array_merge($ret, $db->command(array("dbstats" => 1)));
@@ -47,7 +47,7 @@ class DbController extends BaseController {
 			$this->stats[$key] = count($collections) . " collections:";
 			foreach ($collections as $collection) {
 				$this->stats[$key] .= "<br/><a href=\""
-					. $this->path("collection.index", array( "db" => $this->db, "collection" => $collection->getName())) . "\">" . $collection->getName() . "</a>";
+					. $this->path("collection.index", array( "db" => $this->db, "collection" => $collection->getCollectionName())) . "\">" . $collection->getName() . "</a>";
 			}
 		}
 		if(isset($ret["objects"])) {
@@ -91,7 +91,7 @@ class DbController extends BaseController {
 	public function doDbTransfer() {
 		$this->db = xn("db");
 
-		$db = $this->_mongo->selectDB($this->db);
+		$db = $this->_mongo->selectDatabase($this->db);
 		$this->collections = $db->listCollections();
 		$this->servers = $this->_admin->servers();
 
@@ -149,7 +149,7 @@ class DbController extends BaseController {
 				$uri = "mongodb://" . $this->target_host . ":" . $this->target_port;
 			}
 			$targetConnection = new RMongo($uri, $targetOptions);
-			$targetDb = $targetConnection->selectDB($this->db);
+			$targetDb = $targetConnection->selectDatabase($this->db);
 			if ($this->target_auth) {
 				// "authenticate" can only be used between 1.0.1 - 1.2.11
 				if (RMongo::compareVersion("1.0.1") >= 0 && RMongo::compareVersion("1.2.11") < 0) {
@@ -184,7 +184,7 @@ class DbController extends BaseController {
 	public function doDbExport() {
 		$this->db = xn("db");
 
-		$db = $this->_mongo->selectDB($this->db);
+		$db = $this->_mongo->selectDatabase($this->db);
 		$this->collections = MDb::listCollections($db);
 		$this->selectedCollections = array();
 		if (!$this->isPost()) {
@@ -276,7 +276,7 @@ class DbController extends BaseController {
 
 				$ret = array("ok" => 0);
 				if ($format == "js") {
-					$ret = $this->_mongo->selectDB($this->db)->execute('function (){ ' . $body . ' }');
+					$ret = $this->_mongo->selectDatabase($this->db)->execute('function (){ ' . $body . ' }');
 
 					if (!$ret["ok"]) {
 						$this->error = $ret["errmsg"];
@@ -295,7 +295,7 @@ class DbController extends BaseController {
 						foreach ($lines as $line) {
 							$line = trim($line);
 							if ($line) {
-								$ret = $this->_mongo->selectDB($this->db)->execute('function (c, o){ o=eval("(" + o + ")"); db.getCollection(c).insert(o); }', array( $collection, $line ));
+								$ret = $this->_mongo->selectDatabase($this->db)->execute('function (c, o){ o=eval("(" + o + ")"); db.getCollection(c).insert(o); }', array( $collection, $line ));
 							}
 						}
 
@@ -352,7 +352,7 @@ class DbController extends BaseController {
 	public function doProfileLevel() {
 		$this->db = xn("db");
 
-		$db = $this->_mongo->selectDB($this->db);
+		$db = $this->_mongo->selectDatabase($this->db);
 		$query1 = $db->execute("function (){ return db.getProfilingLevel(); }");
 		$this->level = $query1["retval"];
 		if (x("go") == "save_level") {
@@ -370,7 +370,7 @@ class DbController extends BaseController {
 	/** clear profiling data **/
 	public function doClearProfile() {
 		$this->db = xn("db");
-		$db = $this->_mongo->selectDB($this->db);
+		$db = $this->_mongo->selectDatabase($this->db);
 
 		$query1 = $db->execute("function (){ return db.getProfilingLevel(); }");
 		$oldLevel = $query1["retval"];
@@ -386,7 +386,7 @@ class DbController extends BaseController {
 	/** authentication **/
 	public function doAuth() {
 		$this->db = xn("db");
-		$db = $this->_mongo->selectDB($this->db);
+		$db = $this->_mongo->selectDatabase($this->db);
 
 		//users
 		$collection = $db->selectCollection("system.users");
@@ -402,7 +402,7 @@ class DbController extends BaseController {
 	/** delete user **/
 	public function doDeleteUser() {
 		$this->db = xn("db");
-		$db = $this->_mongo->selectDB($this->db);
+		$db = $this->_mongo->selectDatabase($this->db);
 
 		$db->execute("function (username){ db.removeUser(username); }", array(xn("user")));
 		$this->redirect("db.auth", array(
@@ -437,7 +437,7 @@ class DbController extends BaseController {
 			$this->display();
 			return;
 		}
-		$db = $this->_mongo->selectDB($this->db);
+		$db = $this->_mongo->selectDatabase($this->db);
 		$db->execute("function (username, pass, readonly){ db.addUser(username, pass, readonly); }", array(
 			$username,
 			$password,
@@ -458,7 +458,7 @@ class DbController extends BaseController {
 		$this->max = xi("max");
 
 		if ($this->isPost()) {
-			$db = $this->_mongo->selectDB($this->db);
+			$db = $this->_mongo->selectDatabase($this->db);
 
 			MCollection::createCollection($db, $this->name, array(
 				"capped" => $this->isCapped,
@@ -479,7 +479,7 @@ class DbController extends BaseController {
 	/** drop all collections in a db **/
 	public function doDropDbCollections() {
 		$this->db = xn("db");
-		$db = $this->_mongo->selectDB($this->db);
+		$db = $this->_mongo->selectDatabase($this->db);
 		foreach ($db->listCollections() as $collection) {
 			$collection->drop();
 		}
@@ -492,7 +492,7 @@ window.parent.frames["left"].location.reload();
 	/** clear all records in all collections **/
 	public function doClearDbCollections() {
 		$this->db = xn("db");
-		$db = $this->_mongo->selectDB($this->db);
+		$db = $this->_mongo->selectDatabase($this->db);
 		foreach ($db->listCollections() as $collection) {
 			$collection->remove();
 		}
@@ -506,7 +506,7 @@ window.parent.frames["left"].location.reload();
 	public function doRepairDatabase() {
 		$this->db = xn("db");
 
-		$db = $this->_mongo->selectDB($this->db);
+		$db = $this->_mongo->selectDatabase($this->db);
 		$ret = $db->command(array( "repairDatabase" => 1 ));
 		//$ret = $db->execute('function (){ return db.repairDatabase(); }'); //occure error in current version, we did not know why?
 		$this->ret = $this->_highlight($ret, "json");

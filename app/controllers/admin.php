@@ -59,10 +59,10 @@ class AdminController extends BaseController {
 
 		$this->tables = array();
 		if ($db) {
-			$mongodb = $this->_mongo->selectDB($db);
+			$mongodb = $this->_mongo->selectDatabase($db);
 			$tables = MDb::listCollections($mongodb);
 			foreach ($tables as $table) {
-				$this->tables[$table->getName()] = $table->count();
+				$this->tables[$table->getCollectionName()] = $table->count();
 			}
 		}
 		$this->display();

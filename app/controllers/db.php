@@ -47,7 +47,7 @@ class DbController extends BaseController {
 			$this->stats[$key] = count($collections) . " collections:";
 			foreach ($collections as $collection) {
 				$this->stats[$key] .= "<br/><a href=\""
-					. $this->path("collection.index", array( "db" => $this->db, "collection" => $collection->getCollectionName())) . "\">" . $collection->getName() . "</a>";
+					. $this->path("collection.index", array( "db" => $this->db, "collection" => $collection->getCollectionName())) . "\">" . $collection->getCollectionName() . "</a>";
 			}
 		}
 		if(isset($ret["objects"])) {

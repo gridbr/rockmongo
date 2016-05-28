@@ -27,14 +27,14 @@ class ServerController extends BaseController {
 			$this->webServers["Web server"] = $webServer;
 		}
 		$this->webServers["<a href=\"http://www.php.net\" target=\"_blank\">PHP version</a>"] = "PHP " . PHP_VERSION;
-		$this->webServers["<a href=\"http://www.php.net/mongo\" target=\"_blank\">PHP extension</a>"] = "<a href=\"http://pecl.php.net/package/mongo\" target=\"_blank\">mongo</a>/" . RMongo::getVersion();
+		$this->webServers["<a href=\"http://www.php.net/mongo\" target=\"_blank\">PHP extension</a>"] = "<a href=\"http://pecl.php.net/package/mongo\" target=\"_blank\">mongodb</a>/" . MONGODB_VERSION;
 
-		$this->directives = ini_get_all("mongo");
+		$this->directives = ini_get_all("mongodb");
 
 		//build info
 		$this->buildInfos = array();
 		try {
-			$ret = $db->command(array("buildinfo" => 1));
+			$ret = $db->command(array("buildinfo" => 1))->toArray()[0];
 			if ($ret["ok"]) {
 				unset($ret["ok"]);
 				$this->buildInfos = $ret;
@@ -45,10 +45,7 @@ class ServerController extends BaseController {
 
 		//connection
 		$this->connections = array(
-			"Host" => $this->_server->mongoHost(),
-			"Port" => $this->_server->mongoPort(),
-			"Username" => "******",
-			"Password" => "******"
+			"URI" => str_replace("{{username}}", "***", str_replace("{{password}}", "***", str_replace("{{database}}", "", $this->_server->mongoUri()))),
 		);
 
 		$this->display();

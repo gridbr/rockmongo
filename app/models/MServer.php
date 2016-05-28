@@ -143,7 +143,7 @@ class MServer {
 				$uri = str_replace('{{password}}', $password, $uri); 
 				$uri = str_replace('{{database}}', $db, $uri);
 			}
-			$this->_mongo = new MongoDB\Client($uri, $options);
+			$this->_mongo = new MongoDB\Client($uri, $options, ['typeMap' => ['root' => 'array', 'document' => 'array', 'array' => 'array']]);
 			$this->_mongo->listDatabases();
 		}
 		catch(Exception $e) {

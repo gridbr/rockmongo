@@ -84,8 +84,8 @@ class ServerController extends BaseController {
 		$ret = $this->_server->listDbs();
 		$this->dbs = $ret["databases"];
 		foreach ($this->dbs as $index => $db) {
-			$mongodb = $this->_mongo->selectDB($db["name"]);
-			$ret = $mongodb->command(array("dbstats" => 1));
+			$mongodb = $this->_mongo->selectDatabase($db["name"]);
+			$ret = $mongodb->command(array("dbstats" => 1))->toArray()[0];
 			$ret["collections"] = count(MDb::listCollections($mongodb));
 			if (isset($db["sizeOnDisk"])) {
 				$ret["diskSize"] = r_human_bytes($db["sizeOnDisk"]);
@@ -131,7 +131,7 @@ class ServerController extends BaseController {
 				$this->display();
 				return;
 			}
-			$this->ret = $this->_highlight($this->_mongo->selectDB(xn("db"))->command($command), $format);
+			$this->ret = $this->_highlight($this->_mongo->selectDatabase(xn("db"))->command($command), $format);
 		}
 		$this->display();
 	}
@@ -163,7 +163,7 @@ class ServerController extends BaseController {
 					$arguments[$index] = $array;
 				}
 			}
-			$ret = $this->_mongo->selectDB(xn("db"))->execute($code, $arguments);
+			$ret = $this->_mongo->selectDatabase(xn("db"))->execute($code, $arguments);
 			$this->ret = $this->_highlight($ret, "json");
 		}
  		$this->display();
@@ -174,7 +174,7 @@ class ServerController extends BaseController {
 		$this->progs = array();
 
 		try {
-			$query = $this->_mongo->selectDB("admin")->execute('function (){
+			$query = $this->_mongo->selectDatabase("admin")->execute('function (){
 				return db.$cmd.sys.inprog.find({ $all:1 }).next();
 			}');
 
@@ -198,7 +198,7 @@ class ServerController extends BaseController {
 	/** kill one operation in processlist **/
 	public function doKillOp() {
 		$opid = xi("opid");
-		$query = $this->_mongo->selectDB("admin")->execute('function (opid){
+		$query = $this->_mongo->selectDatabase("admin")->execute('function (opid){
 			return db.killOp(opid);
 		}', array( $opid ));
 		if ($query["ok"]) {
@@ -228,7 +228,7 @@ class ServerController extends BaseController {
 		$this->status = array();
 
 		try {
-			$ret = $this->_mongo->selectDB("local")->execute('function () { return db.getReplicationInfo(); }');
+			$ret = $this->_mongo->selectDatabase("local")->execute('function () { return db.getReplicationInfo(); }');
 			$status = isset($ret["retval"]) ? $ret["retval"] : array();
 			if (isset($ret["retval"]["errmsg"])) {
 				$this->status["errmsg"] = $ret["retval"]["errmsg"];
@@ -260,7 +260,7 @@ class ServerController extends BaseController {
 		$this->slaves = array();
 
 		try {
-			$query = $this->_mongo->selectDB("local")->selectCollection("slaves")->find();
+			$query = $this->_mongo->selectDatabase("local")->selectCollection("slaves")->find();
 			foreach ($query as $one) {
 				foreach ($one as $param=>$value) {
 					if ($param == "syncedTo") {
@@ -276,7 +276,7 @@ class ServerController extends BaseController {
 		//masters
 		$this->masters = array();
 		try {
-			$query = $this->_mongo->selectDB("local")->selectCollection("sources")->find();
+			$query = $this->_mongo->selectDatabase("local")->selectCollection("sources")->find();
 			foreach ($query as $one) {
 				foreach ($one as $param=>$value) {
 					if ($param == "syncedTo" || $param == "localLogTs") {
@@ -293,7 +293,7 @@ class ServerController extends BaseController {
 
 		//me
 		try {
-			$this->me = $this->_mongo->selectDB("local")->selectCollection("me")->findOne();
+			$this->me = $this->_mongo->selectDatabase("local")->selectCollection("me")->findOne();
 		} catch (Exception $e) {
 			$this->me = array();
 		}

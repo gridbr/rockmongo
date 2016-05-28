@@ -19,7 +19,7 @@ class DbController extends BaseController {
 		$db = $this->_mongo->selectDatabase($this->db);
 		$collections = MDb::listCollections($db);
 
-		$ret = array_merge($ret, $db->command(array("dbstats" => 1)));
+		$ret = array_merge($ret, $db->command(array("dbstats" => 1))->toArray()[0]);
 		$ret["diskSize"] = "-";
 		if (isset($ret["sizeOnDisk"])) {
 			$ret["diskSize"] = r_human_bytes($ret["sizeOnDisk"]);

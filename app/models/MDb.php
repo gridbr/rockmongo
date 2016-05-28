@@ -9,7 +9,7 @@ class MDb {
 	 * @param array $params javascript function parameters
 	 * @return array 
 	 */
-	static function exec(MongoDB $db, $code, array $params = array()) {
+	static function exec(MongoDB\Database $db, $code, array $params = array()) {
 		$query = $db->execute($code, $params);
 		if (!$query["ok"]) {
 			exit("Execute failed:<font color=\"red\">" . $query["errmsg"] . "</font><br/>\n<pre>" . $code . "</pre>");
@@ -23,26 +23,17 @@ class MDb {
 	 * @param MongoDB $db DB
 	 * @return array<MongoCollection>
 	 */
-	static function listCollections(MongoDB $db) {
+	static function listCollections(MongoDB\Database $db) {
 		$server = MServer::currentServer();
 		
 		$names = array();
-		$query = $db->execute("function (){ return db.getCollectionNames(); }", array());
-        if ($query["ok"]) {
-            $names= $query["retval"];
-        } 
-        else{
-            $colls = $db->listCollections(true);
-            foreach($colls as $coll){
-                $names[] = $coll->getName();
-            }               
-        }
+		$colls = $db->listCollections();
+		foreach($colls as $coll){
+			$names[] = $coll->getName();
+		}
 
 		$ret = array();
 		foreach ($names as $name) {
-			if ($server->shouldHideCollection($name)) {
-				continue;
-			}
 			if (preg_match("/^system\\./", $name)) {
 				continue;
 			}
@@ -53,9 +44,6 @@ class MDb {
 		//system collections
 		if (!$server->uiHideSystemCollections()) {
 			foreach ($names as $name) {
-				if ($server->shouldHideCollection($name)) {
-					continue;
-				}
 				if (preg_match("/^system\\./", $name)) {
 					$ret[] = $name;
 				}

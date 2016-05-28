@@ -175,7 +175,7 @@ class MServer {
 	public function listDbs() {
 		$dbs = array();
 		try {
-			$dbs = $this->_mongo->listDatabases();
+			$dbs = iterator_to_array($this->_mongo->listDatabases());
 		} catch (Exception $e) {
 			$dbs["ok"] = false;
 		}

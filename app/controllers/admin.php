@@ -46,7 +46,7 @@ class AdminController extends BaseController {
 
 		//add collection count
 		foreach ($this->dbs as $index => $db) {
-			$collectionCount = count(MDb::listCollections($this->_mongo->selectDB($db["name"])));
+			$collectionCount = count(MDb::listCollections($this->_mongo->selectDatabase($db["name"])));
 			$db["collectionCount"] = $collectionCount;
 			if (isset($db["sizeOnDisk"])) {
 				$db["size"] = round($db["sizeOnDisk"]/1024/1024, 2);//M

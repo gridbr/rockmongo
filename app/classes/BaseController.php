@@ -208,7 +208,7 @@ class BaseController extends RExtController {
 	 */
 	protected function _highlight($var, $format = "array", $label = false) {
 		import("classes.VarExportor");
-		$exportor = new VarExportor($this->_mongo->selectDB("admin"), $var);
+		$exportor = new VarExportor($this->_mongo->selectDatabase("admin"), $var);
 		$varString = null;
 		$highlight = true;
 		switch ($this->_server->docsRender()) {

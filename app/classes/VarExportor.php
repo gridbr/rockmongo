@@ -16,7 +16,7 @@ class VarExportor {
 	 * @param MongoDB $db current db you are operating
 	 * @param mixed $var variable
 	 */
-	function __construct(MongoDB $db, $var) {
+	function __construct(MongoDB\Database $db, $var) {
 		$this->_db = $db;
 		$this->_var = $var;
 	}

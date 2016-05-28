@@ -57,8 +57,8 @@ class ServerController extends BaseController {
 
 		try {
 			//status
-			$db = $this->_mongo->selectDB("admin");
-			$ret = $db->command(array("serverStatus" => 1));
+			$db = $this->_mongo->selectDatabase("admin");
+			$ret = $db->command(array("serverStatus" => 1))->toArray()[0];
 			if ($ret["ok"]) {
 				unset($ret["ok"]);
 				$this->status = $ret;

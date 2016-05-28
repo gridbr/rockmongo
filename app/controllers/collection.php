@@ -39,7 +39,7 @@ class CollectionController extends BaseController {
 		parent::onBefore();
 		$this->db = xn("db");
 		$this->collection = xn("collection");
-		$this->_mongodb = $this->_mongo->selectDB($this->db);
+		$this->_mongodb = $this->_mongo->selectDatabase($this->db);
 	}
 
 	/**
@@ -122,7 +122,7 @@ class CollectionController extends BaseController {
 		}
 
 		//information
-		$db = $this->_mongo->selectDB($this->db);
+		$db = $this->_mongo->selectDatabase($this->db);
 		$info = MCollection::info($db, $this->collection);
 		$this->canAddField = !$info["capped"];
 
@@ -164,10 +164,12 @@ class CollectionController extends BaseController {
 			$this->queryFields = array();
 		}
 
-		$this->indexFields = $db->selectCollection($this->collection)->getIndexInfo();
+		$indexFields = iterator_to_array($db->selectCollection($this->collection)->listIndexes());
 		$this->recordsCount = $db->selectCollection($this->collection)->count();
-		foreach ($this->indexFields as $index => $indexField) {
-			$this->indexFields[$index]["keystring"] = $this->_encodeJson($indexField["key"]);
+		$this->indexFields = array();
+		foreach ($indexFields as $index => $indexField) {
+			$this->indexFields[$index]["name"] = $indexField->getName();
+			$this->indexFields[$index]["keystring"] = $this->_encodeJson($indexField->getKey());
 		}
 
 		$this->queryHints = x("query_hints");
@@ -478,7 +480,7 @@ class CollectionController extends BaseController {
 		}
 		else {
 			$row = null;
-			$eval = new VarEval($criteria, $format, $this->_mongo->selectDB($this->db));
+			$eval = new VarEval($criteria, $format, $this->_mongo->selectDatabase($this->db));
 			$row = $eval->execute();
 			if (!is_array($row)) {
 				$this->error = "To explain a query, criteria must be an array.";
@@ -514,7 +516,7 @@ class CollectionController extends BaseController {
 
 		$queryHints = x("query_hints");
 		if (!empty($queryHints)) {
-			$db = $this->_mongo->selectDB($this->db);
+			$db = $this->_mongo->selectDatabase($this->db);
 			$indexes = $db->selectCollection($this->collection)->getIndexInfo();
 			foreach ($indexes as $index) {
 				if (in_array($index["name"], $queryHints)) {
@@ -581,7 +583,7 @@ class CollectionController extends BaseController {
 			), time(), $data);
 
 			$row = null;
-			$eval = new VarEval($data, $format, $this->_mongo->selectDb($this->db));
+			$eval = new VarEval($data, $format, $this->_mongo->selectDatabase($this->db));
 			$row = $eval->execute();
 			if ($row === false || !is_array($row)) {
 				$this->error = "Data must be a valid {$format}.";
@@ -644,7 +646,7 @@ class CollectionController extends BaseController {
 			$this->last_format = $format;
 
 			$row = null;
-			$eval = new VarEval($this->data, $format, $this->_mongo->selectDb($this->db));
+			$eval = new VarEval($this->data, $format, $this->_mongo->selectDatabase($this->db));
 			$row = $eval->execute();
 			if ($row === false || !is_array($row)) {
 				$this->error = "Only valid {$format} is accepted.";
@@ -686,7 +688,7 @@ class CollectionController extends BaseController {
 		$this->db = xn("db");
 		$this->collection = xn("collection");
 		$this->id = xn("id");
-		$db = $this->_mongo->selectDB($this->db);
+		$db = $this->_mongo->selectDatabase($this->db);
 		$prefix = substr($this->collection, 0, strrpos($this->collection, "."));
 		$file = $db->getGridFS($prefix)->findOne(array("_id" => rock_real_id($this->id)));
 		$fileinfo = pathinfo($file->getFilename());
@@ -728,7 +730,7 @@ window.parent.frames["left"].location.reload();
 	public function doRemoveCollection() {
 		$this->db = x("db");
 		$this->collection = xn("collection");
-		$db = $this->_mongo->selectDB($this->db);
+		$db = $this->_mongo->selectDatabase($this->db);
 		$db->dropCollection($this->collection);
 		$this->display();
 	}
@@ -737,7 +739,7 @@ window.parent.frames["left"].location.reload();
 	public function doCollectionIndexes() {
 		$this->db = x("db");
 		$this->collection = xn("collection");
-		$collection = $this->_mongo->selectCollection($this->_mongo->selectDB($this->db), $this->collection);
+		$collection = $this->_mongo->selectCollection($this->_mongo->selectDatabase($this->db), $this->collection);
 		$this->indexes = $collection->getIndexInfo();
 		foreach ($this->indexes as $_index => $index) {
 			$index["data"] = $this->_highlight($index["key"], "json");
@@ -751,7 +753,7 @@ window.parent.frames["left"].location.reload();
 		$this->db = x("db");
 		$this->collection = xn("collection");
 
-		$db = $this->_mongo->selectDB($this->db);
+		$db = $this->_mongo->selectDatabase($this->db);
 		$collection = $this->_mongo->selectCollection($db, $this->collection);
 		$indexes = $collection->getIndexInfo();
 		foreach ($indexes as $index) {
@@ -771,9 +773,9 @@ window.parent.frames["left"].location.reload();
 	public function doCreateIndex() {
 		$this->db = x("db");
 		$this->collection = xn("collection");
-		$this->nativeFields = MCollection::fields($this->_mongo->selectDB($this->db), $this->collection);
+		$this->nativeFields = MCollection::fields($this->_mongo->selectDatabase($this->db), $this->collection);
 		if ($this->isPost()) {
-			$db = $this->_mongo->selectDB($this->db);
+			$db = $this->_mongo->selectDatabase($this->db);
 			$collection = $this->_mongo->selectCollection($db, $this->collection);
 
 			$fields = xn("field");
@@ -827,9 +829,9 @@ window.parent.frames["left"].location.reload();
 	public function doCreate2DIndex() {
 		$this->db = x("db");
 		$this->collection = xn("collection");
-		$this->nativeFields = MCollection::fields($this->_mongo->selectDB($this->db), $this->collection);
+		$this->nativeFields = MCollection::fields($this->_mongo->selectDatabase($this->db), $this->collection);
 		if ($this->isPost()) {
-			$db = $this->_mongo->selectDB($this->db);
+			$db = $this->_mongo->selectDatabase($this->db);
 			$collection = $this->_mongo->selectCollection($db, $this->collection);
 
 			$attrs = array();
@@ -900,8 +902,8 @@ window.parent.frames["left"].location.reload();
 		$this->collection = xn("collection");
 		$this->stats = array();
 
-		$db = $this->_mongo->selectDB($this->db);
-		$ret = $db->command(array( "collStats" => $this->collection ));
+		$db = $this->_mongo->selectDatabase($this->db);
+		$ret = $db->command(array( "collStats" => $this->collection ))->toArray()[0];
 		if ($ret["ok"]) {
 			$this->stats = $ret;
 			foreach ($this->stats as $index => $stat) {
@@ -912,7 +914,7 @@ window.parent.frames["left"].location.reload();
 		}
 
 		//top
-		$ret = $this->_mongo->selectDB("admin")->command(array( "top" => 1 ));
+		$ret = $this->_mongo->selectDatabase("admin")->command(array( "top" => 1 ))->toArray()[0];
 		$this->top = array();
 		$namespace = $this->db . "." . $this->collection;
 		if ($ret["ok"] && !empty($ret["totals"][$namespace])) {
@@ -929,7 +931,7 @@ window.parent.frames["left"].location.reload();
 		$this->db = x("db");
 		$this->collection = xn("collection");
 
-		$db = $this->_mongo->selectDB($this->db);
+		$db = $this->_mongo->selectDatabase($this->db);
 		$this->ret = $this->_highlight($db->selectCollection($this->collection)->validate(), "json");
 		$this->display();
 	}
@@ -950,7 +952,7 @@ window.parent.frames["left"].location.reload();
 			}
 			if (!$removeExists) {
 				//Is there a same name?
-				$collections = MDb::listCollections($this->_mongo->selectDB($this->db));
+				$collections = MDb::listCollections($this->_mongo->selectDatabase($this->db));
 				foreach ($collections as $collection) {
 					if ($collection->getName() == $newname) {
 						$this->error = "There is already a '{$newname}' collection, you should drop it before renaming.";
@@ -959,7 +961,7 @@ window.parent.frames["left"].location.reload();
 					}
 				}
 			}
- 			$this->ret = $this->_mongo->selectDB($this->db)->execute('function (coll, newname, dropExists) { db.getCollection(coll).renameCollection(newname, dropExists);}', array( $oldname, $newname, (bool)$removeExists ));
+ 			$this->ret = $this->_mongo->selectDatabase($this->db)->execute('function (coll, newname, dropExists) { db.getCollection(coll).renameCollection(newname, dropExists);}', array( $oldname, $newname, (bool)$removeExists ));
  			if ($this->ret["ok"]) {
  				$this->realName = $newname;
  				$this->message = "Operation success. <a href=\"?action=collection.index&db={$this->db}&collection={$newname}\">[GO &raquo;]</a>";
@@ -977,7 +979,7 @@ window.parent.frames["left"].location.reload();
 		$this->db = xn("db");
 		$this->collection = xn("collection");
 
-		$ret = $this->_mongo->selectDB($this->db)->selectCollection("system.namespaces")->findOne(array(
+		$ret = $this->_mongo->selectDatabase($this->db)->selectCollection("system.namespaces")->findOne(array(
 			"name" => $this->db . "." . $this->collection
 		));
 		$this->isCapped = 0;
@@ -999,7 +1001,7 @@ window.parent.frames["left"].location.reload();
 
 			//rename current collection
 			$bkCollection = $this->collection . "_rockmongo_bk_" . uniqid();
-			$this->ret = $this->_mongo->selectDB($this->db)->execute('function (coll, newname, dropExists) { db.getCollection(coll).renameCollection(newname, dropExists);}', array( $this->collection, $bkCollection, true ));
+			$this->ret = $this->_mongo->selectDatabase($this->db)->execute('function (coll, newname, dropExists) { db.getCollection(coll).renameCollection(newname, dropExists);}', array( $this->collection, $bkCollection, true ));
 			if (!$this->ret["ok"]) {
 				$this->error = "There is something wrong:<font color=\"red\">{$this->ret['errmsg']}</font>, please refresh the page to try again.";
 				$this->display();
@@ -1007,7 +1009,7 @@ window.parent.frames["left"].location.reload();
 			}
 
 			//create new collection
-			$db = $this->_mongo->selectDB($this->db);
+			$db = $this->_mongo->selectDatabase($this->db);
 			MCollection::createCollection($db, $this->collection, array(
 				"capped" => $this->isCapped,
 				"size" => $this->size,
@@ -1050,7 +1052,7 @@ window.parent.frames["left"].location.reload();
 				$this->display();
 				return;
 			}
-			$db = $this->_mongo->selectDB($this->db);
+			$db = $this->_mongo->selectDatabase($this->db);
 			if ($removeTarget) {
 				$db->selectCollection($target)->drop();
 			}

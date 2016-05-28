@@ -25,7 +25,7 @@ class VarEval {
 	 */
 	private $_db;
 
-	function __construct($source, $format = "array", MongoDB $db = null) {
+	function __construct($source, $format = "array", MongoDB\Database $db = null) {
 		$this->_source = $source;
 
 		$this->_format = $format;
@@ -106,6 +106,7 @@ class VarEval {
 	}
 
 	private function _runJson() {
+		/*
 		$timezone = @date_default_timezone_get();
 		date_default_timezone_set("UTC");
 		$ret = $this->_db->execute('function () {
@@ -173,6 +174,7 @@ class VarEval {
 		if ($ret["ok"]) {
 			return $ret["retval"];
 		}
+		*/
 		return json_decode($this->_source, true);
 	}
 

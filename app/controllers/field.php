@@ -16,14 +16,14 @@ class FieldController extends BaseController {
 		parent::onBefore();
 		$this->db = xn("db");
 		$this->collection = xn("collection");
-		$this->_mongodb = $this->_mongo->selectDB($this->db);
+		$this->_mongodb = $this->_mongo->selectDatabase($this->db);
 	}
 	
 	/**
 	 * remove a field
 	 */
 	function doRemove() {
-		$db = $this->_mongo->selectDb($this->db);
+		$db = $this->_mongo->selectDatabase($this->db);
 		
 		$field = xn("field");
 		$id = xn("id");
@@ -54,7 +54,7 @@ class FieldController extends BaseController {
 	 * set field value to NULL
 	 */
 	function doClear() {
-		$db = $this->_mongo->selectDb($this->db);
+		$db = $this->_mongo->selectDatabase($this->db);
 		
 		$field = xn("field");
 		$id = xn("id");
@@ -85,7 +85,7 @@ class FieldController extends BaseController {
 	 * rename a field
 	 */
 	function doRename() {
-		$db = $this->_mongo->selectDB($this->db);
+		$db = $this->_mongo->selectDatabase($this->db);
 		
 		$field = xn("field");
 		$id = xn("id");
@@ -123,7 +123,7 @@ class FieldController extends BaseController {
 	 * create new field
 	 */
 	function doNew() {
-		$db = $this->_mongo->selectDB($this->db);
+		$db = $this->_mongo->selectDatabase($this->db);
 		
 		$id = xn("id");
 		$newname = trim(xn("newname"));
@@ -277,7 +277,7 @@ class FieldController extends BaseController {
 	 * update value for a field
 	 */
 	function doUpdate() {
-		$db = $this->_mongo->selectDB($this->db);
+		$db = $this->_mongo->selectDatabase($this->db);
 		
 		$id = xn("id");
 		$newname = trim(xn("newname"));

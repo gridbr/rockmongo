@@ -1,7 +1,7 @@
 <?php
 
 class MCollection {
-	public static function fields (MongoDB $db, $collection) {
+	public static function fields (MongoDB\Database $db, $collection) {
 		$one = $db->selectCollection($collection)->findOne();
 		if (empty($one)) {
 			return array();
@@ -50,8 +50,8 @@ class MCollection {
 	 * @param MongoDB $db database
 	 * @param string $collection collection name
 	 */
-	public static function info(MongoDB $db, $collection) {
-		$ret = $db->command(array( "collStats" => $collection ));
+	public static function info(MongoDB\Database $db, $collection) {
+		$ret = $db->command(array( "collStats" => $collection ))->toArray()[0];
 
 		if (!$ret["ok"]) {
 			exit("There is something wrong:<font color=\"red\">{$ret['errmsg']}</font>, please refresh the page to try again.");
@@ -82,7 +82,7 @@ class MCollection {
 	 * @param string $name Collection name
 	 * @param array $options Options, capped, size, max
 	 */
-	public static function createCollection(MongoDB $db, $name, array $options) {
+	public static function createCollection(MongoDB\Database $db, $name, array $options) {
 		if (RMongo::compareVersion("1.4.0") >= 0) {
 			$db->createCollection($name, $options);
 		}

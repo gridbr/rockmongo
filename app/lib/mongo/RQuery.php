@@ -40,10 +40,10 @@ class RQuery {
 	 * @param string $db 数据库
 	 * @param string $collection 集合
 	 */
-	function __construct(RMongo $mongo, $db, $collection) {
+	function __construct(MongoDB\Client $mongo, $db, $collection) {
 		$this->_dbName = $db;
 		$this->_collectionName = $collection;
-		$this->_db = $mongo->selectDB($this->_dbName);
+		$this->_db = $mongo->selectDatabase($this->_dbName);
 		$this->_collection = $mongo->selectCollection($this->_dbName, $this->_collectionName);
 	}
 	
@@ -59,8 +59,8 @@ class RQuery {
 			$nameOrAttrs = array( $nameOrAttrs => $value );
 		}
 		foreach ($nameOrAttrs as $attr => $value) {
-			if ($attr == "_id" && (!is_object($value) || !($value instanceof MongoId)) && strlen($attr) == 24) {
-				$value = new MongoId($value);
+			if ($attr == "_id" && (!is_object($value) || !($value instanceof MongoDB\BSON\ObjectID)) && strlen($attr) == 24) {
+				$value = new MongoDB\BSON\ObjectID($value);
 			}
 			if (!isset($this->_attrs[$attr])) {
 				$this->_attrs[$attr] = array();
@@ -362,22 +362,25 @@ class RQuery {
 	 * @return MongoCursor
 	 */
 	function cursor() {
-		$cursor = $this->_collection->find($this->criteria(), $this->_results);
+		$options = array();
 		if ($this->_offset >= 0) {
-			$cursor->skip($this->_offset);
+			$options['skip'] = $this->_offset;
 		}
 		if ($this->_limit > 0) {
-			$cursor->limit($this->_limit);
+			$options['limit'] = $tis->_limit;
 		}
 		if ($this->_sort) {
-			$cursor->sort($this->_sort);
+			$options['sort'] = $this->_sort;
 		}
-		if (!empty($this->_hints)) {
-			foreach ($this->_hints as $hint) {
-				$cursor->hint($hint);
-			}
+		if ($this->_results) {
+			$options['projection'] = $this->_results;
 		}
-		return $cursor;
+		//if (!empty($this->_hints)) {
+		//	foreach ($this->_hints as $hint) {
+		//		$cursor->hint($hint);
+		//	}
+		//}
+		return $this->_collection->find($this->criteria(), $options);
 	}
 	
 	/**
@@ -490,7 +493,20 @@ class RQuery {
 	 * @return integer
 	 */
 	function count($withLimit = false) {
-		return $this->cursor()->count($withLimit);
+		$options = array();
+		if ($this->_offset >= 0) {
+			$options['skip'] = $this->_offset;
+		}
+		if ($this->_limit > 0) {
+			$options['limit'] = $tis->_limit;
+		}
+		if ($this->_sort) {
+			$options['sort'] = $this->_sort;
+		}
+		if ($this->_results) {
+			$options['projection'] = $this->_results;
+		}
+		return $this->_collection->count($this->criteria(), $options);
 	}
 	
 	/**
@@ -501,10 +517,10 @@ class RQuery {
 	 * @return boolean
 	 */
 	function insert(array $attrs, $safe = false) {
-		$bool = $this->_collection->insert($attrs, array( "safe" => $safe ));
+		$bool = $this->_collection->insertOne($attrs, array( "safe" => $safe ));
 		if ($bool) {
 			import("@.RMongo");
-			if ($attrs["_id"] instanceof MongoId) {
+			if ($attrs["_id"] instanceof MongoDB\BSON\ObjectID) {
 				RMongo::setLastInsertId($attrs["_id"]->__toString());
 			}
 			else {
@@ -555,7 +571,7 @@ class RQuery {
 	 * @return boolean
 	 */
 	function delete() {
-		return $this->_collection->remove($this->criteria());
+		return $this->_collection->deleteOne($this->criteria());
 	}
 	
 	/**

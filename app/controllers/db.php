@@ -494,7 +494,9 @@ window.parent.frames["left"].location.reload();
 		$this->db = xn("db");
 		$db = $this->_mongo->selectDatabase($this->db);
 		foreach ($db->listCollections() as $collection) {
-			$collection->remove();
+			import("lib.mongo.RQuery");
+			$query = new RQuery($this->_mongo, $db, $collection->getName());
+			$query->delete();
 		}
 		echo '<script language="javascript">
 window.parent.frames["left"].location.reload();

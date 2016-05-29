@@ -173,34 +173,36 @@ class MServer {
 	 * @return array
 	 */
 	public function listDbs() {
-		$dbs = array();
+		$ret = array();
 		try {
 			$dbs = iterator_to_array($this->_mongo->listDatabases());
+			$ret["ok"] = true;
 		} catch (Exception $e) {
-			$dbs["ok"] = false;
+			$ret["ok"] = false;
 		}
-		if (!$dbs["ok"]) {
+		if (!$ret["ok"]) {
 			$user = MUser::userInSession();
 
-			$dbs = array(
+			$ret = array(
 				"databases" => array(),
 				"totalSize" => 0,
 				"ok" => 1
 			);
 			foreach ($user->dbs() as $db) {
-				$dbs["databases"][] = array( "name" => $db, "empty" => false, "sizeOnDisk" => 0);
+				$ret["databases"][] = array( "name" => $db, "empty" => false, "sizeOnDisk" => 0);
 			}
 		}
-		foreach ($dbs["databases"] as $index => $database) {
-			$name = $database["name"];
-			if (!empty($hideDbs) && in_array($name, $hideDbs)) {
-				unset($dbs["databases"][$index]);
-			}
-			if (!empty($onlyDbs) && !in_array($name, $onlyDbs)) {
-				unset($dbs["databases"][$index]);
-			}
+		$totalSize = 0;
+		foreach ($dbs as $index => $database) {
+			$ret['databases'][$index] = array(
+				'name' => $database->getName(),
+				'sizeOnDisk' => $database->getSizeOnDisk(),
+				'empty' => $database->isEmpty(),
+			);
+			$totalSize += $database->getSizeOnDisk();
 		}
-		return $dbs;
+		$ret['totalSize'] = $totalSize;
+		return $ret;
 	}
 
 	/**

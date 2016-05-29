@@ -83,12 +83,8 @@ class MCollection {
 	 * @param array $options Options, capped, size, max
 	 */
 	public static function createCollection(MongoDB\Database $db, $name, array $options) {
-		if (RMongo::compareVersion("1.4.0") >= 0) {
-			$db->createCollection($name, $options);
-		}
-		else {
-			$db->createCollection($name, isset($options["capped"]) ? $options["capped"] : false, isset($options["size"]) ? $options["size"] : 0, isset($options["max"]) ? $options["max"] : 0);
-		}
+		$options['capped'] = $options['capped'] != 0;
+		$db->createCollection($name, $options);
 	}
 }
 

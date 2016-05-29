@@ -92,7 +92,7 @@ function rock_real_id($id) {
 			case "long":
 				return doubleval($value);
 			case "object":
-				return new MongoId($value);
+				return new MongoDB\BSON\ObjectID($value);
 			case "MongoInt32":
 				return new MongoInt32($value);
 			case "MongoInt64":
@@ -120,7 +120,7 @@ function rock_real_id($id) {
  * @param mixed $id object ID
  */
 function rock_id_string($id) {
-	if (is_object($id) && $id instanceof MongoId) {
+	if (is_object($id) && $id instanceof MongoDB\BSON\ObjectID) {
 		return "rid_object:" . $id->__toString();
 	}
 	if (is_object($id)) {

@@ -469,7 +469,7 @@ class DbController extends BaseController {
 
 			//add index
 			if (!$this->isCapped) {
-				$db->selectCollection($this->name)->ensureIndex(array( "_id" => 1 ));
+				$db->selectCollection($this->name)->createIndex(array( "_id" => 1 ));
 			}
 		}
 

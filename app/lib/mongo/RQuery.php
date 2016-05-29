@@ -458,7 +458,7 @@ class RQuery {
 				unset($value["_id"]);
 			}
 			else {
-				if (!$keepId && isset($value["_id"]) && ($value["_id"] instanceof MongoId)) {
+				if (!$keepId && isset($value["_id"]) && ($value["_id"] instanceof MongoDB\BSON\ObjectID)) {
 					$value["_id"] = $value["_id"]->__toString();
 				}
 			}

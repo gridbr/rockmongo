@@ -954,7 +954,7 @@ window.parent.frames["left"].location.reload();
 				//Is there a same name?
 				$collections = MDb::listCollections($this->_mongo->selectDatabase($this->db));
 				foreach ($collections as $collection) {
-					if ($collection->getName() == $newname) {
+					if ($collection->getCollectionName() == $newname) {
 						$this->error = "There is already a '{$newname}' collection, you should drop it before renaming.";
 						$this->display();
 						return;

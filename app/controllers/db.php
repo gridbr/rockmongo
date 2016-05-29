@@ -206,15 +206,15 @@ class DbController extends BaseController {
 			//indexes
 			foreach ($this->selectedCollections as $collection) {
 				$collObj = $db->selectCollection($collection);
-				$infos = $collObj->getIndexInfo();
+				$infos = $collObj->listIndexes();
 				foreach ($infos as $info) {
 					$options = array();
-					if (isset($info["unique"])) {
+					if ($info->isUnique()) {
 						$options["unique"] = $info["unique"];
 					}
-					$exportor = new VarExportor($db, $info["key"]);
+					$exportor = new VarExportor($db, $info->getKey());
 					$exportor2 = new VarExportor($db, $options);
-					$this->contents .= "\n/** {$collection} indexes **/\ndb.getCollection(\"" . addslashes($collection) . "\").ensureIndex(" . $exportor->export(MONGO_EXPORT_JSON) . "," . $exportor2->export(MONGO_EXPORT_JSON) . ");\n";
+					$this->contents .= "\n/** {$collection} indexes **/\ndb.getCollection(\"" . addslashes($collection) . "\").createIndex(" . $exportor->export(MONGO_EXPORT_JSON) . "," . $exportor2->export(MONGO_EXPORT_JSON) . ");\n";
 				}
 			}
 

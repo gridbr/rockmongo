@@ -16,7 +16,7 @@ function checkAll(obj) {
 	<?php hm("nocollections"); ?>
 <?php else: ?>
 	<?php foreach ($collections as $collection):?>
-		<li><label><input type="checkbox" class="check_collection" name="checked[<?php h($collection->getName()); ?>]" value="1" <?php if (in_array($collection->getName(), $selectedCollections)): ?>checked="checked"<?php endif;?>/> <?php h($collection->getName()); ?></label></li>
+		<li><label><input type="checkbox" class="check_collection" name="checked[<?php h($collection->getCollectionName()); ?>]" value="1" <?php if (in_array($collection->getCollectionName(), $selectedCollections)): ?>checked="checked"<?php endif;?>/> <?php h($collection->getCollectionName()); ?></label></li>
 	<?php endforeach; ?>
 <?php endif; ?>
 </ul>

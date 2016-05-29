@@ -507,8 +507,7 @@ window.parent.frames["left"].location.reload();
 		$this->db = xn("db");
 
 		$db = $this->_mongo->selectDatabase($this->db);
-		$ret = $db->command(array( "repairDatabase" => 1 ));
-		//$ret = $db->execute('function (){ return db.repairDatabase(); }'); //occure error in current version, we did not know why?
+		$ret = $db->command(array( "repairDatabase" => 1 ))->toArray()[0];
 		$this->ret = $this->_highlight($ret, "json");
 		$this->display();
 	}

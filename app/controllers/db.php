@@ -522,7 +522,7 @@ window.parent.frames["left"].location.reload();
 			return;
 		}
 
-		$ret = $this->_mongo->dropDB($this->db);
+		$ret = $this->_mongo->dropDatabase($this->db);
 		$this->ret = $this->_highlight($ret, "json");
 		$this->display("dropDatabaseResult");
 	}

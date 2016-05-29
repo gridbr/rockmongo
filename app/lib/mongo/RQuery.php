@@ -367,7 +367,7 @@ class RQuery {
 			$options['skip'] = $this->_offset;
 		}
 		if ($this->_limit > 0) {
-			$options['limit'] = $tis->_limit;
+			$options['limit'] = $this->_limit;
 		}
 		if ($this->_sort) {
 			$options['sort'] = $this->_sort;

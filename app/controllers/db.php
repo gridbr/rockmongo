@@ -392,8 +392,8 @@ class DbController extends BaseController {
 		$collection = $db->selectCollection("system.users");
 		$cursor = $collection->find();
 		$this->users= array();
-		while($cursor->hasNext()) {
-			$this->users[] = $cursor->getNext();
+		foreach ($cursor as $user) {
+			$this->users[] = $user;
 		}
 
 		$this->display();

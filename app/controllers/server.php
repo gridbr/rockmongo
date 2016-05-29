@@ -131,7 +131,7 @@ class ServerController extends BaseController {
 				$this->display();
 				return;
 			}
-			$this->ret = $this->_highlight($this->_mongo->selectDatabase(xn("db"))->command($command), $format);
+			$this->ret = $this->_highlight($this->_mongo->selectDatabase(xn("db"))->command($command)->toArray()[0], $format);
 		}
 		$this->display();
 	}

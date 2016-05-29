@@ -571,7 +571,7 @@ class RQuery {
 	 * @return boolean
 	 */
 	function delete() {
-		return $this->_collection->deleteOne($this->criteria());
+		return $this->_collection->deleteMany($this->criteria());
 	}
 	
 	/**

@@ -159,53 +159,26 @@ class FieldController extends BaseController {
 		
 		if (!$keep) {
 			if ($id) {
-				$db->selectCollection($this->collection)->update(array(
-					"_id" => rock_real_id($id)
-				), array( '$set' => array( $newname => $realValue ) ));
+				$db->selectCollection($this->collection)->findOneAndUpdate(
+					array("_id" => rock_real_id($id)),
+					array( '$set' => array( $newname => $realValue ) )
+				);
 			}
 			else {
-				$db->selectCollection($this->collection)->update(array(), array( '$set' => array( $newname => $realValue ) ), array( "multiple" => 1 ));
+				$db->selectCollection($this->collection)->updateMany(array(), array( '$set' => array( $newname => $realValue ) ));
 			}
-			$this->_outputJson(array( "code" => 200 ));
+		} else {
+			if ($id) {
+				$db->selectCollection($this->collection)->findOneAndUpdate(
+					array("_id" => rock_real_id($id), $newname => array('$exists' => false)),
+					array( '$set' => array( $newname => $realValue ) )
+				);
+			} else {
+				$db->selectCollection($this->collection)->updateMany(array($newname => array('$exists' => false)), array( '$set' => array( $newname => $realValue ) ));
+			}
 		}
-		$ret = $db->execute('function (coll, newname, fieldType, value, id, keep){
-				if (typeof(value) != "object") {
-					if (fieldType == "integer") {
-						if (typeof(NumberInt) != "undefined") {
-							value = NumberInt(value);
-						}
-					} else if (fieldType == "long") {
-						value = NumberLong(value);
-					}
-				}
-				
-				var cursor;
-				if (id) {
-					cursor = db.getCollection(coll).find({_id:id});
-				}
-				else {
-					cursor = db.getCollection(coll).find();
-				}
-				while(cursor.hasNext()) {
-					var row = cursor.next();
-					var newobj = { $set:{} };
-					if (typeof(row[newname]) == "undefined" || !keep) {
-						newobj["$set"][newname] = value;
-					}
-					if (typeof(row["_id"]) != "undefined") {
-						db.getCollection(coll).update({ _id:row["_id"] }, newobj);
-					}
-					else {
-						db.getCollection(coll).update(row, newobj);
-					}
-				}
-			}', array($this->collection, $newname, $fieldType, $realValue, rock_real_id($id), $keep ? true:false));
-		if ($ret["ok"]) {
-			$this->_outputJson(array( "code" => 200 ));
-		}
-		else {
-			$this->_outputJson(array( "code" => 500, "message" => $ret["errmsg"] ));
-		}
+
+		$this->_outputJson(array( "code" => 200 ));
 	}	
 	
 	/**

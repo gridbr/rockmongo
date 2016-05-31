@@ -129,20 +129,10 @@ class BaseController extends RExtController {
 		$realValue = null;
 		switch ($dataType) {
 			case "integer":
-				if (class_exists("MongoInt32")) {
-					$realValue = new MongoInt32($integerValue);
-				}
-				else {
-					$realValue = intval($realValue);
-				}
+				$realValue = intval($integerValue);
 				break;
 			case "long":
-				if (class_exists("MongoInt64")) {
-					$realValue = new MongoInt64($longValue);
-				}
-				else {
-					$realValue = $longValue;
-				}
+				$realValue = $longValue;
 				break;
 			case "float":
 			case "double":

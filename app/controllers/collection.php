@@ -1027,35 +1027,6 @@ window.parent.frames["left"].location.reload();
 		$this->display();
 	}
 
-	/** duplicate collection **/
-	public function doCollectionDuplicate() {
-		$this->db = xn("db");
-		$this->collection = xn("collection");
-
-		if (!$this->isPost()) {
-			x("target", $this->collection . "_copy");
-			x("remove_target", 1);
-			x("copy_indexes", 1);
-		}
-		if ($this->isPost()) {
-			$target = trim(xn("target"));
-			$removeTarget = x("remove_target");
-			$copyIndexes = x("copy_indexes");
-			if ($target === "") {
-				$this->error = "Please enter a valid target.";
-				$this->display();
-				return;
-			}
-			$db = $this->_mongo->selectDatabase($this->db);
-			if ($removeTarget) {
-				$db->selectCollection($target)->drop();
-			}
-			$this->_copyCollection($db, $this->collection, $target, $copyIndexes);
-			$this->message = "Collection duplicated successfully.";
- 		}
-		$this->display();
-	}
-
 	/** transfer a collection **/
 	public function doCollectionTransfer() {
 		$this->redirect("db.dbTransfer", array(

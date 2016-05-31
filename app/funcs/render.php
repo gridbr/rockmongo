@@ -246,7 +246,6 @@ function render_collection_menu($dbName, $collectionName) {
 		array( "action" => "collection.collectionProps", "params" => $params, "name" => rock_lang("properties") ),
 		array( "action" => "collection.collectionIndexes", "params" => $params, "name" => rock_lang("indexes") ),
 		array( "action" => "collection.collectionRename", "params" => $params, "name" => rock_lang("rename") ),
-		array( "action" => "collection.collectionDuplicate", "params" => $params, "name" => rock_lang("duplicate") ),
 		array( "action" => "collection.collectionTransfer", "params" => $params, "name" => rock_lang("transfer") ),
 		array( "action" => "collection.collectionValidate", "params" => $params, "name" => rock_lang("validate") ),
 		array( "action" => "collection.removeCollection", "params" => $params, "name" => rock_lang("drop"), "attr.onclick" => "return window.confirm('Are you sure to drop collection \\'" . $collectionName . "\\'?')" ),

@@ -481,7 +481,7 @@ class DbController extends BaseController {
 		$this->db = xn("db");
 		$db = $this->_mongo->selectDatabase($this->db);
 		foreach ($db->listCollections() as $collection) {
-			$collection->drop();
+			$db->dropCollection($collection->getName());
 		}
 		echo '<script language="javascript">
 window.parent.frames["left"].location.reload();

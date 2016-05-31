@@ -926,7 +926,7 @@ window.parent.frames["left"].location.reload();
 		$this->collection = xn("collection");
 
 		$db = $this->_mongo->selectDatabase($this->db);
-		$this->ret = $this->_highlight($db->selectCollection($this->collection)->validate(), "json");
+		$this->ret = $this->_highlight($db->command(array("validate" => $this->collection))->toArray()[0], "json");
 		$this->display();
 	}
 

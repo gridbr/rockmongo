@@ -353,16 +353,20 @@ class DbController extends BaseController {
 		$this->db = xn("db");
 
 		$db = $this->_mongo->selectDatabase($this->db);
-		$query1 = $db->execute("function (){ return db.getProfilingLevel(); }");
-		$this->level = $query1["retval"];
+		$query1 = $db->command(array("profile" => -1))->toArray()[0];
+		$this->level = $query1["was"];
 		if (x("go") == "save_level") {
 			$level = xi("level");
 			$slowms = xi("slowms");
-			$db->execute("function(level,slowms) { db.setProfilingLevel(level,slowms); }", array($level, $slowms));
+			$db->command(array("profile" => $level, "slowms" => $slowms));
 			$this->level = $level;
 		}
 		else {
-			x("slowms", 50);
+			if (isset($query1['slowms'])) {
+				x("slowms", $query1['slowms']);
+			} else {
+				x("slowms", 50);
+			}
 		}
 		$this->display();
 	}
@@ -372,11 +376,11 @@ class DbController extends BaseController {
 		$this->db = xn("db");
 		$db = $this->_mongo->selectDatabase($this->db);
 
-		$query1 = $db->execute("function (){ return db.getProfilingLevel(); }");
-		$oldLevel = $query1["retval"];
-		$db->execute("function(level) { db.setProfilingLevel(level); }", array(0));
-		$ret = $db->selectCollection("system.profile")->drop();
-		$db->execute("function(level) { db.setProfilingLevel(level); }", array($oldLevel));
+		$query1 = $db->command(array("profile" => -1))->toArray()[0];
+		$oldLevel = $query1["was"];
+		$query1 = $db->command(array("profile" => 0));
+		$ret = $db->dropCollection("system.profile");
+		$query1 = $db->command(array("profile" => $oldLevel));
 
 		$this->redirect("db.profile", array(
 			"db" => $this->db

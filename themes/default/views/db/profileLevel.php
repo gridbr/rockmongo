@@ -16,7 +16,7 @@
 <option value="1" <?php if($level==1):?>selected="selected"<?php endif;?>><?php echo hm("profiling_level2"); ?></option>
 <option value="2" <?php if($level==2):?>selected="selected"<?php endif;?>><?php echo hm("profiling_level3"); ?></option>
 </select><br/>
-<div id="slowmsDiv" style="display:none">
+<div id="slowmsDiv" style="<?php if ($level!=1):?>display:none<?php endif;?>">
 	<?php echo hm("timecost"); ?> &gt; <input type="text" name="slowms" size="7" value="<?php h(xi("slowms"));?>"/> ms
 </div>
 <input type="submit" value="<?php hm("save"); ?>"/>
@@ -26,7 +26,7 @@
 <script language="javascript">
 function changeLevel(select) {
 	if (select.value == 1) {
-		//$("#slowmsDiv").show();
+		$("#slowmsDiv").show();
 	}
 	else {
 		$("#slowmsDiv").hide();

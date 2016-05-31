@@ -955,7 +955,7 @@ window.parent.frames["left"].location.reload();
 					}
 				}
 			}
- 			$this->ret = $this->_mongo->selectDatabase($this->db)->execute('function (coll, newname, dropExists) { db.getCollection(coll).renameCollection(newname, dropExists);}', array( $oldname, $newname, (bool)$removeExists ));
+ 			$this->ret = $this->_mongo->selectDatabase("admin")->command(array("renameCollection" => "{$this->db}.$oldname", "to" => "{$this->db}.$newname", "dropTarget" => dropExists))->toArray()[0];
  			if ($this->ret["ok"]) {
  				$this->realName = $newname;
  				$this->message = "Operation success. <a href=\"?action=collection.index&db={$this->db}&collection={$newname}\">[GO &raquo;]</a>";

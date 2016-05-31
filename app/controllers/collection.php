@@ -740,10 +740,15 @@ window.parent.frames["left"].location.reload();
 		$this->db = x("db");
 		$this->collection = xn("collection");
 		$collection = $this->_mongo->selectCollection($this->_mongo->selectDatabase($this->db), $this->collection);
-		$this->indexes = $collection->getIndexInfo();
-		foreach ($this->indexes as $_index => $index) {
-			$index["data"] = $this->_highlight($index["key"], "json");
-			$this->indexes[$_index] = $index;
+		$indexes = $collection->listIndexes();
+		$this->indexes = array();
+		foreach ($indexes as $_index) {
+			$this->indexes[] = array(
+				"key" => $_index->getKey(),
+				"name" => $_index->getName(),
+				"unique" => $_index->isUnique(),
+				"data" => $this->_highlight($_index->getKey(), "json")
+			);
 		}
 		$this->display();
 	}
@@ -752,16 +757,8 @@ window.parent.frames["left"].location.reload();
 	public function doDeleteIndex() {
 		$this->db = x("db");
 		$this->collection = xn("collection");
-
 		$db = $this->_mongo->selectDatabase($this->db);
-		$collection = $this->_mongo->selectCollection($db, $this->collection);
-		$indexes = $collection->getIndexInfo();
-		foreach ($indexes as $index) {
-			if ($index["name"] == trim(xn("index"))) {
-				$ret = $db->command(array("deleteIndexes" => $collection->getName(), "index" => $index["name"]));
-				break;
-			}
-		}
+		$collection = $this->_mongo->selectCollection($db, $this->collection)->dropIndex(trim(xn("index")));
 
 		$this->redirect("collection.collectionIndexes", array(
 			"db" => $this->db,
@@ -802,9 +799,6 @@ window.parent.frames["left"].location.reload();
 			$options = array();
 			if (x("is_unique")) {
 				$options["unique"] = 1;
-				if (x("drop_duplicate")) {
-					$options["dropDups"] = 1;
-				}
 			}
 			$options["background"] = 1;
 			$options["safe"] = 1;
@@ -814,7 +808,7 @@ window.parent.frames["left"].location.reload();
 			if (!empty($name)) {
 				$options["name"] = $name;
 			}
-			$collection->ensureIndex($attrs, $options);
+			$collection->createIndex($attrs, $options);
 
 			$this->redirect("collection.collectionIndexes", array(
 				"db" => $this->db,
@@ -885,7 +879,7 @@ window.parent.frames["left"].location.reload();
 			if (!empty($name)) {
 				$options["name"] = $name;
 			}
-			$collection->ensureIndex($attrs, $options);
+			$collection->createIndex($attrs, $options);
 
 			$this->redirect("collection.collectionIndexes", array(
 					"db" => $this->db,

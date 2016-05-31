@@ -988,41 +988,6 @@ window.parent.frames["left"].location.reload();
 		if (isset($ret["options"]["max"])) {
 			$this->max = $ret["options"]["max"];
 		}
-		if ($this->isPost()) {
-			$this->isCapped = xi("is_capped");
-			$this->size = xi("size");
-			$this->max = xi("max");
-
-			//rename current collection
-			$bkCollection = $this->collection . "_rockmongo_bk_" . uniqid();
-			$this->ret = $this->_mongo->selectDatabase($this->db)->execute('function (coll, newname, dropExists) { db.getCollection(coll).renameCollection(newname, dropExists);}', array( $this->collection, $bkCollection, true ));
-			if (!$this->ret["ok"]) {
-				$this->error = "There is something wrong:<font color=\"red\">{$this->ret['errmsg']}</font>, please refresh the page to try again.";
-				$this->display();
-				return;
-			}
-
-			//create new collection
-			$db = $this->_mongo->selectDatabase($this->db);
-			MCollection::createCollection($db, $this->collection, array(
-				"capped" => $this->isCapped,
-				"size" => $this->size,
-				"max" => $this->max
-			));
-
-			//copy data to new collection
-			if (!$this->_copyCollection($db, $bkCollection, $this->collection, true)) {
-				//try to recover
-				$this->ret = $db->execute('function (coll, newname, dropExists) { db.getCollection(coll).renameCollection(newname, dropExists);}', array( $bkCollection, $this->collection, true ));
-
-				$this->error = "There is something wrong:<font color=\"red\">{$ret['errmsg']}</font>, please refresh the page to try again.";
-				$this->display();
-				return;
-			}
-
-			//drop current collection
-			$db->dropCollection($bkCollection);
-		}
 
 		$this->display();
 	}

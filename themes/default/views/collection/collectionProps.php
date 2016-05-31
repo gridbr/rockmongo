@@ -22,21 +22,16 @@
 	</tr>
 	<tr bgcolor="#ffffff">
 		<td><?php hm("iscapped"); ?></td>
-		<td><input type="checkbox" name="is_capped" value="1" <?php if($isCapped):?>checked="checked"<?php endif;?> /></td>
+		<td><input readonly type="checkbox" name="is_capped" value="1" <?php if($isCapped):?>checked="checked"<?php endif;?> /></td>
 	</tr>
 	<tr bgcolor="#ffffff">
 		<td><?php hm("size"); ?></td>
-		<td><input type="text" name="size" value="<?php h($size);?>" size="10" /> bytes</td>
+		<td><input readonly type="text" name="size" value="<?php h($size);?>" size="10" /> bytes</td>
 	</tr>
 	<tr bgcolor="#ffffff">
 		<td><?php hm("max"); ?></td>
-		<td><input type="text" name="max" value="<?php h($max);?>" size="10" /> documents</td>
-	</tr>
-	<tr bgcolor="#ffffff">
-		<td colspan="2"><input type="submit" value="<?php hm("save"); ?>" /></td>
+		<td><input readonly type="text" name="max" value="<?php h($max);?>" size="10" /> documents</td>
 	</tr>
 </table>
 
 </form>
-
-<div style="width:700px;margin-top:10px"><?php hm("warningprops"); ?></div>

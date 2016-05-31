@@ -183,7 +183,7 @@ class VarExportor {
 			switch (gettype($var)) {
 				case "integer":
 					$this->_paramIndex ++;
-					$this->_jsonParams[$this->_paramIndex] = 'NumberInt(' . $var . ')';
+					$this->_jsonParams[$this->_paramIndex] = "$var";
 					return $this->_param($this->_paramIndex);
 				default:
 					return $var;

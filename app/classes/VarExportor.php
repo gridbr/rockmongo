@@ -198,34 +198,28 @@ class VarExportor {
 		if (is_object($var)) {
 			$this->_paramIndex ++;
 			switch (get_class($var)) {
-				case "MongoId":
+				case "MongoDB\BSON\ObjectID":
 					$this->_jsonParams[$this->_paramIndex] = 'ObjectId("' . $var->__toString() . '")';
 					return $this->_param($this->_paramIndex);
-				case "MongoInt32":
-						$this->_jsonParams[$this->_paramIndex] = 'NumberInt(' . $var->__toString() . ')';
-						return $this->_param($this->_paramIndex);
-				case "MongoInt64":
-					$this->_jsonParams[$this->_paramIndex] = 'NumberLong(' . $var->__toString() . ')';
-					return $this->_param($this->_paramIndex);
-				case "MongoDate":
+				case "MongoDB\BSON\UTCDateTime":
 					$timezone = @date_default_timezone_get();
 					date_default_timezone_set("UTC");
 					$this->_jsonParams[$this->_paramIndex] = "ISODate(\"" . date("Y-m-d", $var->sec) . "T" . date("H:i:s.", $var->sec) . ($var->usec/1000) . "Z\")";
 					date_default_timezone_set($timezone);
 					return $this->_param($this->_paramIndex);
-				case "MongoTimestamp":
+				case "MongoDB\BSON\Timestamp":
 					$this->_jsonParams[$this->_paramIndex] = call_user_func($jsonService, array(
 						"t" => $var->inc * 1000,
 						"i" => $var->sec
 					));
 					return $this->_param($this->_paramIndex);
-				case "MongoMinKey":
+				case "MongoDB\BSON\MinKey":
 					$this->_jsonParams[$this->_paramIndex] = call_user_func($jsonService, array( '$minKey' => 1 ));
 					return $this->_param($this->_paramIndex);
-				case "MongoMaxKey":
+				case "MongoDB\BSON\MaxKey":
 					$this->_jsonParams[$this->_paramIndex] = call_user_func($jsonService, array( '$minKey' => 1 ));
 					return $this->_param($this->_paramIndex);
-				case "MongoCode":
+				case "MongoDB\BSON\Javascript":
 					$this->_jsonParams[$this->_paramIndex] = $var->__toString();
 					return $this->_param($this->_paramIndex);
 				default:

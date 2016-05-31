@@ -393,12 +393,7 @@ class DbController extends BaseController {
 		$db = $this->_mongo->selectDatabase($this->db);
 
 		//users
-		$collection = $db->selectCollection("system.users");
-		$cursor = $collection->find();
-		$this->users= array();
-		foreach ($cursor as $user) {
-			$this->users[] = $user;
-		}
+		$this->users = $db->command(array('usersInfo' => 1))->toArray()[0]['users'];
 
 		$this->display();
 	}
@@ -408,7 +403,7 @@ class DbController extends BaseController {
 		$this->db = xn("db");
 		$db = $this->_mongo->selectDatabase($this->db);
 
-		$db->execute("function (username){ db.removeUser(username); }", array(xn("user")));
+		$db->command(array('dropUser' => xn("user")));
 		$this->redirect("db.auth", array(
 			"db" => $this->db
 		));
@@ -426,6 +421,13 @@ class DbController extends BaseController {
 		$username = trim(xn("username"));
 		$password = trim(xn("password"));
 		$password2 = trim(xn("password2"));
+		$roles = array();
+		foreach (array('read', 'readWrite', 'dbAdmin', 'userAdmin', 'clusterAdmin', 'readAnyDatabase', 'readWriteAnyDatabase', 'userAdminAnyDatabase', 'dbAdminAnyDatabase') as $role) {
+			if (x($role)) {
+				$roles[] = $role;
+			}
+		}
+
 		if ($username == "") {
 			$this->error = "You must supply a username for user.";
 			$this->display();
@@ -441,12 +443,9 @@ class DbController extends BaseController {
 			$this->display();
 			return;
 		}
+
 		$db = $this->_mongo->selectDatabase($this->db);
-		$db->execute("function (username, pass, readonly){ db.addUser(username, pass, readonly); }", array(
-			$username,
-			$password,
-			x("readonly") ? true : false
-		));
+		$db->command(array("createUser" => $username, "pwd" => $password, "roles" => $roles));
 
 		$this->redirect("auth", array(
 			"db" => $this->db

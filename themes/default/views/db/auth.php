@@ -9,14 +9,14 @@
 	<tr>
 		<th>ID</th>
 		<th>User</th>
-		<th>Read Only</th>
+		<th>Roles</th>
 		<th>Operation</th>
 	</tr>
 	<?php foreach ($users as $user): ?>
 	<tr bgcolor="#fffeee">
 		<td width="120" ><?php h($user["_id"]);?></td>
 		<td><?php h($user["user"]);?></td>
-		<th><?php if(isset($user["readOnly"])):h($user["readOnly"] ? "Y":""); endif; ?></th>
+		<th><?php h($user["roles"]);?></th>
 		<th><a href="<?php h(url("db.deleteUser", array("db"=>$db,"user"=>$user["user"]))); ?>" onclick="return window.confirm('Are you sure to remove user \'<?php h($user["user"]); ?>\'?')">Remove</a></th>
 	</tr>
 	<?php endforeach; ?>

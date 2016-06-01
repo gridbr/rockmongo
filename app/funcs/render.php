@@ -82,7 +82,7 @@ function render_manual_items() {
 		'<a href="http://docs.mongodb.org/manual/applications/update/" target="_blank">' . rock_lang("updating") . '</a>',
 		'<a href="http://docs.mongodb.org/manual/reference/command/" target="_blank">' . rock_lang("commands") . '</a>',
 		'<a href="http://api.mongodb.org/js/" target="_blank">' . rock_lang("jsapi") . '</a>',
-		'<a href="http://www.php.net/manual/en/book.mongo.php" target="_blank">' . rock_lang("phpmongo") . '</a>'
+		'<a href="http://php.net/manual/en/set.mongodb.php" target="_blank">' . rock_lang("phpmongo") . '</a>'
 	);
 
 	//plugins

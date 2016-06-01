@@ -4,7 +4,7 @@
 
 RockMongo is a MongoDB administration tool, written in PHP 5, very easy to install and use.
 
-@sinacloud: We ported it to use *ext-mongodb* driver so it can now work with MongoDB 3.x.
+@sinacloud We ported it to use *ext-mongodb* driver so it can now work with MongoDB 3.x.
 
 ## Installation
 

@@ -2,18 +2,6 @@
 	<?php render_server_menu("replication"); ?>
 </div>
 
-<table bgcolor="#cccccc" cellpadding="2" cellspacing="1" width="600">
-	<tr>
-		<th colspan="2"><?php hm("repstatus"); ?> (db.getReplicationInfo())</th>
-	</tr>
-	<?php foreach ($status as $param=>$value):?>
-	<tr bgcolor="#fffeee">
-		<td width="120" valign="top"><?php h($param);?></td>
-		<td><?php h($value);?></td>
-	</tr>
-	<?php endforeach; ?>
-</table>
-
 <?php if(!empty($me)): ?>
 <div class="gap"></div>
 
@@ -30,39 +18,30 @@
 </table>
 <?php endif; ?>
 
-<?php if(!empty($slaves)): ?>
+<?php if(!empty($status)): ?>
 <div class="gap"></div>
 
 <table bgcolor="#cccccc" cellpadding="2" cellspacing="1" width="600">
 	<tr>
-		<th colspan="2"><?php hm("slaves"); ?> (<a href="<?php h(url("collection.index", array( "db" => "local", "collection" => "slaves" ))); ?>">local.slaves</a>)</th>
+		<th colspan="2"><?php hm("ReplSet"); ?> (rs.status())</th>
 	</tr>
-	<?php foreach ($slaves as $slave):?>
+	<tr bgcolor="#fffeee">
+		<td width="120" valign="top">set</td>
+		<td><?php h($status['set']);?></td>
+	</tr>
+	<tr bgcolor="#fffeee">
+		<td width="120" valign="top">myState</td>
+		<td><?php h($status['myState']);?></td>
+	</tr>
+	<tr bgcolor="#fffeee">
+		<td width="120" valign="top">date</td>
+		<td><?php h($status['date']);?></td>
+	</tr>
+	<?php foreach ($status['members'] as $member):?>
 	<tr bgcolor="#cfffff">
-		<td colspan="2"><?php h($slave["_id"]); ?></td>
+		<td colspan="2">member:<?php h($member["_id"]); ?></td>
 	</tr>
-		<?php foreach ($slave as $param => $value):?>
-		<tr bgcolor="#fffeee">
-			<td width="120" valign="top"><?php h($param);?></td>
-			<td><?php h($value);?></td>
-		</tr>
-		<?php endforeach; ?>
-	<?php endforeach; ?>
-</table>
-<?php endif; ?>
-
-<?php if(!empty($masters)): ?>
-<div class="gap"></div>
-
-<table bgcolor="#cccccc" cellpadding="2" cellspacing="1" width="600">
-	<tr>
-		<th colspan="2"><?php hm("masters"); ?> (<a href="<?php h(url("collection.index", array( "db" => "local", "collection" => "sources" ))); ?>">local.sources</a>)</th>
-	</tr>
-	<?php foreach ($masters as $master):?>
-	<tr bgcolor="#cfffff">
-		<td colspan="2"><?php h($master["_id"]); ?></td>
-	</tr>
-		<?php foreach ($master as $param => $value):?>
+		<?php foreach ($member as $param => $value):?>
 		<tr bgcolor="#fffeee">
 			<td width="120" valign="top"><?php h($param);?></td>
 			<td><?php h($value);?></td>

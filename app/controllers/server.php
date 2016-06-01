@@ -225,71 +225,7 @@ class ServerController extends BaseController {
 
 	/** replication status **/
 	public function doReplication() {
-		$this->status = array();
-
-		try {
-			$ret = $this->_mongo->selectDatabase("local")->execute('function () { return db.getReplicationInfo(); }');
-			$status = isset($ret["retval"]) ? $ret["retval"] : array();
-			if (isset($ret["retval"]["errmsg"])) {
-				$this->status["errmsg"] = $ret["retval"]["errmsg"];
-			}
-			else {
-				foreach ($status as $param => $value) {
-					if ($param == "logSizeMB") {
-						$this->status["Configured oplog size"] = $value . "m";
-					}
-					else if ($param == "timeDiff") {
-						$this->status["Log length start to end"] = $value . "secs (" . $status["timeDiffHours"] . "hrs)";
-					}
-					else if ($param == "tFirst") {
-						$this->status["Oplog first event time"] = $value;
-					}
-					else if ($param == "tLast") {
-						$this->status["Oplog last event time"] = $value;
-					}
-					else if ($param == "now") {
-						$this->status["Now"] = $value;
-					}
-				}
-			}
-		} catch (Exception $e) {
-
-		}
-
-		//slaves
-		$this->slaves = array();
-
-		try {
-			$query = $this->_mongo->selectDatabase("local")->selectCollection("slaves")->find();
-			foreach ($query as $one) {
-				foreach ($one as $param=>$value) {
-					if ($param == "syncedTo") {
-						$one[$param] = date("Y-m-d H:i:s", $value->sec) . "." . $value->inc;
-					}
-				}
-				$this->slaves[] = $one;
-			}
-		} catch (Exception $e) {
-
-		}
-
-		//masters
-		$this->masters = array();
-		try {
-			$query = $this->_mongo->selectDatabase("local")->selectCollection("sources")->find();
-			foreach ($query as $one) {
-				foreach ($one as $param=>$value) {
-					if ($param == "syncedTo" || $param == "localLogTs") {
-						if ($value->inc > 0) {
-							$one[$param] = date("Y-m-d H:i:s", $value->sec) . "." . $value->inc;
-						}
-					}
-				}
-				$this->masters[] = $one;
-			}
-		} catch (Exception $e) {
-
-		}
+		$this->status = $this->_mongo->selectDatabase("admin")->command(array('replSetGetStatus' => 1))->toArray()[0];
 
 		//me
 		try {

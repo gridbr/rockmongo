@@ -19,14 +19,14 @@ RockMongo is a MongoDB administration tool, written in PHP 5, very easy to insta
 
 ## Contributors
 
-iwind.liu <iwind.liu@gmail.com> Leader
-leblanc.simon <leblanc.simon@gmail.com> French translation
-Klaus Silveira <klaussilveira@gmail.com> Brazilian translation
-bmansion <bmansion@mamasam.net> Some small changes
-Vladimir Razuvaev <vladimir.razuvaev@gmail.com> Implement features.
-Anton Zering <anton.zering@gmail.com> German translation
-Borda Juan Ignacio <juanignacioborda@gmail.com> Panels Layout
-Diego Baravalle <diegobaravalle@gmail.com> Spanish Translation
+- iwind.liu <iwind.liu@gmail.com> Leader
+- leblanc.simon <leblanc.simon@gmail.com> French translation
+- Klaus Silveira <klaussilveira@gmail.com> Brazilian translation
+- bmansion <bmansion@mamasam.net> Some small changes
+- Vladimir Razuvaev <vladimir.razuvaev@gmail.com> Implement features.
+- Anton Zering <anton.zering@gmail.com> German translation
+- Borda Juan Ignacio <juanignacioborda@gmail.com> Panels Layout
+- Diego Baravalle <diegobaravalle@gmail.com> Spanish Translation
 
 ## Thanks
 

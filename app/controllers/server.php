@@ -150,7 +150,7 @@ class ServerController extends BaseController {
 }');
 		}
 		if ($this->isPost()) {
-			$code = trim(xn("code"));
+			$code = new MongoDB\BSON\Javascript(trim(xn("code")));
 			$arguments = xn("argument");
 			if (!is_array($arguments)) {
 				$arguments = array();
@@ -163,7 +163,7 @@ class ServerController extends BaseController {
 					$arguments[$index] = $array;
 				}
 			}
-			$ret = $this->_mongo->selectDatabase(xn("db"))->execute($code, $arguments);
+			$ret = $this->_mongo->selectDatabase(xn("db"))->command(array('eval' => array("function" => $code, "arguments" => $arguments)))->toArray()[0];
 			$this->ret = $this->_highlight($ret, "json");
 		}
  		$this->display();

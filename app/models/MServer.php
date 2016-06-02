@@ -64,6 +64,10 @@ class MServer {
 		$this->_mongoName = $mongoName;
 	}
 
+	public function mongoDb() {
+		return $this->_mongoDb;
+	}
+
 	public function mongoUri() {
 		return $this->_mongoUri;
 	}
@@ -139,6 +143,7 @@ class MServer {
 			$uri = $this->_mongoUri;
 			$options = $this->_mongoOptions;
 			if ($this->_mongoAuth) {
+				$this->_mongoDb = $db;
 				$uri = str_replace('{{username}}', $username, $uri);
 				$uri = str_replace('{{password}}', $password, $uri); 
 				$uri = str_replace('{{database}}', $db, $uri);

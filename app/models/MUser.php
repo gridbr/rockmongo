@@ -49,7 +49,7 @@ class MUser {
 			import("@.MServer");
 			$server = MServer::serverWithIndex($this->_hostIndex);
 			$mongoDb = "admin";
-			if (!$server->mongoAuth()) {
+			if ($server->mongoAuth()) {
 				$authDb = MServer::serverWithIndex($this->_hostIndex)->mongoDb();
 				if ($authDb) {
 					$mongoDb = $authDb;

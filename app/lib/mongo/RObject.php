@@ -204,7 +204,7 @@ class RObject extends RModel implements ArrayAccess {
 		$bool = true;
 		if ($this->_id) {//if exists
 			if (!empty($this->_operations)) {
-				$bool = $this->_collection->update(array( "_id" => $this->_id ), $this->_operations, array(
+				$bool = $this->_collection->updateOne(array( "_id" => $this->_id ), $this->_operations, array(
 					"upsert" => false,
 					"multiple" => false
 				));
@@ -214,7 +214,7 @@ class RObject extends RModel implements ArrayAccess {
 			}
 		}
 		else {
-			$bool = $this->_collection->insert($this->_attrs, true);
+			$bool = $this->_collection->insertOne($this->_attrs, true);
 			if ($bool) {
 				$this->_id = $this->_attrs["_id"];
 				import("@.RMongo");
@@ -242,7 +242,7 @@ class RObject extends RModel implements ArrayAccess {
 		return true;
 	}
 
-	function setCollection(MongoCollection $collection) {
+	function setCollection(MongoDB\Collection $collection) {
 		$this->_collection = $collection;
 	}
 

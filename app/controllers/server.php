@@ -27,7 +27,7 @@ class ServerController extends BaseController {
 			$this->webServers["Web server"] = $webServer;
 		}
 		$this->webServers["<a href=\"http://www.php.net\" target=\"_blank\">PHP version</a>"] = "PHP " . PHP_VERSION;
-		$this->webServers["<a href=\"http://www.php.net/mongo\" target=\"_blank\">PHP extension</a>"] = "<a href=\"http://pecl.php.net/package/mongo\" target=\"_blank\">mongodb</a>/" . MONGODB_VERSION;
+		$this->webServers["<a href=\"http://www.php.net/mongodb\" target=\"_blank\">PHP extension</a>"] = "<a href=\"http://pecl.php.net/package/mongodb\" target=\"_blank\">mongodb</a>/" . MONGODB_VERSION;
 
 		$this->directives = ini_get_all("mongodb");
 

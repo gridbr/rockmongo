@@ -218,7 +218,7 @@ class ServerController extends BaseController {
 				return;
 			}
 			$this->message = "New database created.";
-			print_r($this->_mongo->selectDatabase($name)->command(array("listCollections" => 1)));
+			$this->_mongo->selectDatabase($name)->createCollection('test');
 		}
 		$this->display();
 	}

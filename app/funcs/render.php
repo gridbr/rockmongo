@@ -149,12 +149,12 @@ function render_db_menu($dbName) {
 		array( "action" => "db.newCollection", "params" => array("db"=>$dbName), "name" => rock_lang("create_collection") ),
 		array( "action" => "server.command", "params" => array("db"=>$dbName), "name" => rock_lang("command") ),
 		array( "action" => "server.execute", "params" => array("db"=>$dbName), "name" => rock_lang("execute") ),
-		array( "action" => "db.dbTransfer", "params" => array("db"=>$dbName), "name" => rock_lang("transfer") ),
+		array( "action" => "db.auth", "params" => array("db"=>$dbName), "name" => rock_lang("authentication") ),
 		array( "action" => "db.dbExport", "params" => array("db"=>$dbName, "can_download"=>1), "name" => rock_lang("export"), "can_download" => 1 ),
 		array( "action" => "db.dbImport", "params" => array("db"=>$dbName), "name" => rock_lang("import") ),
 		array( "action" => "db.profile", "params" => array("db"=>$dbName), "name" => rock_lang("profile")),
 		array( "action" => "db.repairDatabase", "params" => array("db"=>$dbName), "name" => rock_lang("repair"), "attr.onclick" => "return window.confirm('" . rock_lang("repairdbmsg") . " {$dbName}?');" ),
-		array( "action" => "db.auth", "params" => array("db"=>$dbName), "name" => rock_lang("authentication") ),
+		array( "action" => "db.dbTransfer", "params" => array("db"=>$dbName), "name" => rock_lang("transfer") ),
 		array( "action" => "db.dropDatabase", "params" => array("db"=>$dbName), "name" => rock_lang("drop"), "attr.onclick" => "return window.confirm('" . rock_lang("dropwarning") . " " . $dbName . "? " . rock_lang("dropwarning2") . "');")
 	);
 
